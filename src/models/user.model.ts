@@ -1,5 +1,6 @@
-import pool from '../config/database';
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 class User {
     public id: number;
@@ -14,27 +15,38 @@ class User {
 
     static async createUser(email: string, password: string): Promise<User> {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const result = await pool.query(
-            'INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *',
-            [email, hashedPassword]
-        );
-        return new User(result.rows[0].id, result.rows[0].email, result.rows[0].password);
+        const result = await prisma.user.create({
+            data: {
+                name: "placeholder",
+                email: email,
+                password: hashedPassword,
+            },
+        });
+        return new User(result.id, result.email, result.password);
     }
 
     static async findByEmail(email: string): Promise<User | null> {
-        const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-        if (result.rows.length === 0) return null;
-        return new User(result.rows[0].id, result.rows[0].email, result.rows[0].password);
+        const result = await prisma.user.findUnique({
+            where: {
+                email: email,
+            },
+        });
+        if (!result) return null;
+        return new User(result.id, result.email, result.password);
     }
 
     static async findById(id: number): Promise<User | null> {
-        const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-        if (result.rows.length === 0) return null;
-        return new User(result.rows[0].id, result.rows[0].email, result.rows[0].password);
+        const result = await prisma.user.findUnique({
+            where: {
+                id: id,
+            },
+        });
+        if (!result) return null;
+        return new User(result.id, result.email, result.password);
     }
 
     async validatePassword(password: string): Promise<boolean> {
-        return bcrypt.compare(password, this.password);
+        return await bcrypt.compare(password, this.password);
     }
 }
 
