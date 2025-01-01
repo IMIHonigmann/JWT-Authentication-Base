@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^6.1.0",
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.2",
@@ -24,11 +25,7 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
-    "pg": "^8.13.1",
-    "pg-pool": "^3.7.0",
+    "prisma": "^6.1.0",
     "ts-node-dev": "^2.0.0"
-  },
-  "devDependencies": {
-    "@types/pg": "^8.11.10"
   }
 }
