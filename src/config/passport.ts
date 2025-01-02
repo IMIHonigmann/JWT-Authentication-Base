@@ -1,14 +1,14 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
-import User from '../models/user.model';
+import * as User from '../models/user.model';
 
 export const initializePassport = () => {
     passport.use(new LocalStrategy(
         async (username, password, done) => {
             try {
                 const user = await User.findByEmail(username);
-                if (!user || !(await user.validatePassword(password))) {
+                if (!user || !(await User.validatePassword(password, user.password))) {
                     return done(null, false, { message: 'Invalid credentials' });
                 }
                 return done(null, user);

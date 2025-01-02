@@ -2,52 +2,40 @@ import bcrypt from "bcrypt";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-class User {
-    public id: number;
-    public email: string;
-    public password: string;
-
-    constructor(id: number, email: string, password: string) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-    }
-
-    static async createUser(email: string, password: string): Promise<User> {
+    async function createUser(email: string, password: string) {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const result = await prisma.user.create({
+        const user = await prisma.user.create({
             data: {
                 name: "placeholder",
                 email: email,
                 password: hashedPassword,
             },
         });
-        return new User(result.id, result.email, result.password);
+        return user;
     }
 
-    static async findByEmail(email: string): Promise<User | null> {
-        const result = await prisma.user.findUnique({
+    async function findByEmail(email: string) {
+        const user = await prisma.user.findUnique({
             where: {
                 email: email,
             },
         });
-        if (!result) return null;
-        return new User(result.id, result.email, result.password);
+        if (!user) return null;
+        return user
     }
 
-    static async findById(id: number): Promise<User | null> {
-        const result = await prisma.user.findUnique({
+    async function findById(id: number) {
+        const user = await prisma.user.findUnique({
             where: {
                 id: id,
             },
         });
-        if (!result) return null;
-        return new User(result.id, result.email, result.password);
+        if (!user) return null;
+        return user
     }
 
-    async validatePassword(password: string): Promise<boolean> {
-        return await bcrypt.compare(password, this.password);
+    async function validatePassword(password: string, hashedPassword: string) {
+        return await bcrypt.compare(password, hashedPassword);
     }
-}
 
-export default User;
+export { createUser, findByEmail, findById, validatePassword }

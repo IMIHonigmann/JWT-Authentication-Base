@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import User from '../models/user.model';
+import * as User from '../models/user.model';
 
 export default class AuthController {
     constructor() { }
@@ -47,7 +47,7 @@ export default class AuthController {
             }
 
             // Verify password
-            const isValidPassword = await user.validatePassword(password);
+            const isValidPassword = await User.validatePassword(password, user.password);
             if (!isValidPassword) {
                 return res.status(401).json({ message: 'Invalid credentials' });
             }
