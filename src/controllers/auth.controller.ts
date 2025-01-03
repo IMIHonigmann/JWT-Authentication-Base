@@ -7,7 +7,7 @@ export default class AuthController {
 
     async register(req: Request, res: Response) {
         try {
-            const { email, password } = req.body;
+            const { email, password, username } = req.body;
 
             // Check if user exists
             const existingUser = await User.findByEmail(email);
@@ -16,7 +16,7 @@ export default class AuthController {
             }
 
             // Create new user
-            const user = await User.createUser(email, password);
+            const user = await User.createUser(email, password, username);
 
             // Generate JWT
             const token = jwt.sign(

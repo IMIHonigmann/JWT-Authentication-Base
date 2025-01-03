@@ -1,12 +1,12 @@
-import bcrypt from "bcrypt";
+import argon2 from "argon2";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-    async function createUser(email: string, password: string) {
-        const hashedPassword = await bcrypt.hash(password, 10);
+    async function createUser(email: string, password: string, username = "Anonymous") {
+        const hashedPassword = await argon2.hash(password);
         const user = await prisma.user.create({
             data: {
-                name: "placeholder",
+                name: username,
                 email: email,
                 password: hashedPassword,
             },
@@ -35,7 +35,7 @@ const prisma = new PrismaClient();
     }
 
     async function validatePassword(password: string, hashedPassword: string) {
-        return await bcrypt.compare(password, hashedPassword);
+        return await argon2.verify(hashedPassword, password);
     }
 
 export { createUser, findByEmail, findById, validatePassword }
